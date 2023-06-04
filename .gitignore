@@ -1,0 +1,8 @@
+venv
+.env
+.env-non-dev
+.env-render
+__pycache__
+# *.ipynb*
+.pytest_cache
+*.sql
