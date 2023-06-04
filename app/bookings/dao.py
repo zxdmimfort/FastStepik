@@ -3,10 +3,11 @@
 
 from datetime import date
 
-from sqlalchemy import and_, func, insert, or_, select
+from sqlalchemy import and_, delete, func, insert, or_, select
 from app.dao.base import BaseDAO
 
 from app.bookings.models import Bookings
+from app.exceptions import BookingNotFound, UserNotEnoughPermissions
 from app.hotels.rooms.models import Rooms
 
 from app.database import engine, async_session_maker
@@ -34,9 +35,6 @@ class BookingDAO(BaseDAO):
         async with async_session_maker() as session:
             bookings_with_info = await session.execute(get_bookings_with_info)
             return bookings_with_info.mappings().all()
-            
-
-
 
     @classmethod
     async def add(
@@ -106,3 +104,39 @@ class BookingDAO(BaseDAO):
                 return new_booking.scalar()
             else: 
                 return None
+    
+    @classmethod
+    async def delete_my_booking(
+        cls,
+        booking_id: int,
+        user_id: int
+    ):
+        async with async_session_maker() as session:
+            get_user_id_by_booking_id = select(
+                Bookings.user_id
+            ).select_from(
+                Bookings
+            ).where(
+                Bookings.id == booking_id
+            )
+
+            user_id_by_booking_id = await session.execute(get_user_id_by_booking_id)
+            user_id_by_booking_id: int = user_id_by_booking_id.scalar()
+
+            if user_id_by_booking_id is None:
+                raise BookingNotFound
+            
+            if user_id_by_booking_id != user_id:
+                raise UserNotEnoughPermissions
+            
+            delete_booking_by_id = delete(
+                Bookings
+            ).where(
+                Bookings.id == booking_id
+            )
+
+            result = await session.execute(delete_booking_by_id)
+            await session.commit()
+
+            return result
+

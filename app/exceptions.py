@@ -40,3 +40,11 @@ class UserIsNotPresentException(BookingException):
 class RoomCannotBeBooked(BookingException):
     status_code=status.HTTP_409_CONFLICT
     detail="No rooms left"
+
+class BookingNotFound(BookingException):
+    status_code=status.HTTP_404_NOT_FOUND
+    detail="Booking not found"
+
+class UserNotEnoughPermissions(BookingException):
+    status_code=status.HTTP_403_FORBIDDEN
+    detail="Not enough permissions"
