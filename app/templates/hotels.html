@@ -7,6 +7,18 @@
     <title>Booking Last Resort</title>
 </head>
 <body>
-    Привет Друг
+    <div>
+        {% for hotel in hotels %}
+        <div style="display:flex; margin-bottom: 15px; margin-left: 150px;">
+            <img src="{{ url_for('static', path='images/' + hotel.image_id|string + '.webp') }}"
+            alt="Фото отеля" width="200">
+            <div>
+                <h1>{{hotel.name}}</h1>
+                <h4>{{hotel.location}}</h4>
+                <h3>Комнат: {{hotel.rooms_left}}/{{hotel.rooms_quantity}}</h3>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 </body>
 </html>

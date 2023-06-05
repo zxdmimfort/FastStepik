@@ -12,12 +12,13 @@ router = APIRouter(
 
 
 @router.get("")
-async def get_hotels(
+async def get_hotels_by_location_and_time(
     location: str,
     date_from: date,
     date_to: date,
 ):
     return await HotelDAO.find_all(location, date_from, date_to)
+
 
 @router.get("/id/{hotel_id}", response_model=SHotels)
 async def get_hotel_info(
