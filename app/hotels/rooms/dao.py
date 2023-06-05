@@ -64,7 +64,7 @@ class RoomDAO(BaseDAO):
             ).group_by(Bookings.room_id).cte("booked_rooms")
 
         get_free_rooms = select(
-            Rooms.id, Rooms.hotel_id, Rooms.description,
+            Rooms.id, Rooms.hotel_id, Rooms.name, Rooms.description,
             Rooms.services, Rooms.price, Rooms.quantity,
             Rooms.image_id,
             ((func.date(date_to) - func.date(date_from)) * Rooms.price).label("total_cost"),

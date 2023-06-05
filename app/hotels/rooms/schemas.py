@@ -1,3 +1,4 @@
+from typing import List
 from pydantic import BaseModel, Json
 
 
@@ -7,6 +8,6 @@ class SRooms(BaseModel):
     name: str
     description: str
     price: int
-    services: Json
+    services: List[str] | Json
     quantity: int
     image_id: int
