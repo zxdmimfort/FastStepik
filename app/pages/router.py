@@ -3,6 +3,7 @@ from fastapi.templating import Jinja2Templates
 from app.hotels.rooms.router import get_rooms
 
 from app.hotels.router import get_hotels_by_location_and_time
+from app.users.router import read_users_me
 
 
 router = APIRouter(
@@ -20,6 +21,16 @@ async def get_hotels_page(
     return templates.TemplateResponse(
         name="hotels.html",
         context={"request": request, "hotels": hotels}
+    )
+
+@router.get("/auth_me")
+async def get_my_page(
+    request: Request,
+    user=Depends(read_users_me)
+):
+    return templates.TemplateResponse(
+        name="person_account.html",
+        context={"request": request, "user": user}
     )
 
 # @router.get("/{hotel_id}/rooms")

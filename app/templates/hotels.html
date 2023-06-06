@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -21,4 +21,113 @@
         {% endfor %}
     </div>
 </body>
+</html> -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Last Resort Search Machine</title>
+    <style>
+        header {
+            background-image: "{{ url_for('static', path='images/texture.jpg') }}";
+            background-repeat: repeat-x;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+        }
+    
+        h1 {
+            margin: 0;
+        }
+    
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+    
+        nav li {
+            display: inline-block;
+            margin-left: 20px;
+        }
+    </style>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+		.container {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+			align-items: center;
+			margin: 0 auto;
+			max-width: 50vw;
+            margin-left: 25%;
+			padding: 20px;
+			background-color: #FFFFFF;
+			border-radius: 10px;
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+		}
+
+        .hotel-card {
+            display: flex;
+            margin-bottom: 20px;
+            width: 100%;
+            border: 1px solid #E8E8E8;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .hotel-card img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .hotel-info {
+            padding: 20px;
+        }
+
+        .hotel-info h2 {
+            margin-top: 0;
+        }
+
+        .hotel-info p {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Last Resort Search Machine</h1>
+        <nav>
+            <ul>
+                <li><a href="#">Личный кабинет</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="container">
+        {% for hotel in hotels %}
+        <div class="hotel-card">
+            <img src="{{ url_for('static', path='images/' + hotel.image_id|string + '.webp') }}"
+            alt="{{ hotel.name }}">
+            <div class="hotel-info">
+                <h2>{{ hotel.name }}</h2>
+                <p>{{ hotel.location }}</p>
+                <p>Свободных номеров: {{ hotel.rooms_left }} / {{ hotel.rooms_quantity }}</p>
+                <p>Цена: {{ hotel.price }} руб.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+</body>
 </html>
+
