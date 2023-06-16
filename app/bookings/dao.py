@@ -7,7 +7,7 @@ from sqlalchemy import and_, delete, func, insert, or_, select
 from app.dao.base import BaseDAO
 
 from app.bookings.models import Bookings
-from app.exceptions import BookingNotFound, UserNotEnoughPermissions
+from app.exceptions import BookingNotFound, RoomCannotBeBooked, UserNotEnoughPermissions
 from app.hotels.rooms.models import Rooms
 
 from app.database import engine, async_session_maker
@@ -102,8 +102,7 @@ class BookingDAO(BaseDAO):
                 new_booking = await session.execute(add_booking)
                 await session.commit()
                 return new_booking.scalar()
-            else: 
-                return None
+            return RoomCannotBeBooked
     
     @classmethod
     async def delete_my_booking(
