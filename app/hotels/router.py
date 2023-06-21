@@ -24,4 +24,4 @@ async def get_hotels_by_location_and_time(
 async def get_hotel_info(
     hotel_id: int
 ):
-    return await HotelDAO.find_one(hotel_id)
+    return await HotelDAO.find_one_or_none(id=hotel_id)

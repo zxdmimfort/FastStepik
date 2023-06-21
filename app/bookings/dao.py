@@ -97,11 +97,12 @@ class BookingDAO(BaseDAO):
                     date_from=date_from,
                     date_to=date_to,
                     price=price,
-                ).returning(Bookings)
+                ).returning(Bookings.id)
 
-                new_booking = await session.execute(add_booking)
+                new_booking_id = await session.execute(add_booking)
                 await session.commit()
-                return new_booking.scalar()
+                new_booking = await cls.find_one_or_none(id=new_booking_id.scalar())
+                return new_booking
             return RoomCannotBeBooked
     
     @classmethod

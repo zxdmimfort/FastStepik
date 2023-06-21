@@ -19,7 +19,7 @@ async def get_bookings(user: Users = Depends(get_current_user)):
     return await BookingDAO.find_all(user_id=user.id)
 
 
-@router.post("")
+@router.post("", response_model=SBookings)
 async def add_booking(
     room_id: int,
     date_from: date,

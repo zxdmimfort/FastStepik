@@ -2,6 +2,8 @@ from app.database import async_session_maker
 
 from sqlalchemy import insert, select
 
+from app.exceptions import BookingNotFound
+
 class BaseDAO:
     model = None
 
@@ -15,9 +17,12 @@ class BaseDAO:
     @classmethod
     async def find_one_or_none(cls, **filter_by):
         async with async_session_maker() as session:
-            query = select(cls.model).filter_by(**filter_by)
+            query = select(cls.model.__table__.columns).filter_by(**filter_by)
             result = await session.execute(query)
-            return result.scalar_one_or_none()
+            result = result.mappings().one_or_none()
+            if result is None:
+                raise BookingNotFound
+            return result
 
     @classmethod
     async def find_all(cls, **filter_by):

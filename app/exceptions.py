@@ -43,7 +43,7 @@ class RoomCannotBeBooked(BookingException):
 
 class BookingNotFound(BookingException):
     status_code=status.HTTP_404_NOT_FOUND
-    detail="Booking not found"
+    detail="Not found"
 
 class UserNotEnoughPermissions(BookingException):
     status_code=status.HTTP_403_FORBIDDEN
