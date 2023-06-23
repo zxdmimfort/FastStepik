@@ -11,3 +11,13 @@ class SBookings(BaseModel):
     price: int
     total_cost: int
     total_days: int
+
+class SBookingsInfo(SBookings):
+    id_1: int
+    hotel_id: int
+    name: str
+    description: str
+    price_1: int
+    services: list[str]
+    quantity: int
+    image_id: int
