@@ -15,15 +15,13 @@ router = APIRouter(
 
 
 @router.get("", response_model=list[SHotelsInfo])
-# @cache(expire=20)
+@cache(expire=30)
 async def get_hotels_by_location_and_time(
     location: str,
     date_from: Annotated[date, Query(description=f"Например, {datetime.now().date()}")] = ...,
     date_to: Annotated[date, Query(description=f"Например, {datetime.now().date()}")] = ...,
 ):
-    # await asyncio.sleep(3)
-    hotels = await HotelDAO.find_all(location, date_from, date_to)
-    return hotels
+    return await HotelDAO.find_all(location, date_from, date_to)
 
 
 @router.get("/id/{hotel_id}", response_model=SHotels)

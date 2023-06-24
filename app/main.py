@@ -45,7 +45,11 @@ app.add_middleware(
                    ],
 )
 
-@app.on_event("startup")
+@app.on_event("startup")  # <-- данный декоратор прогоняет код перед запуском FastAPI
 async def startup():
     redis = aioredis.from_url("redis://localhost:6379", )
-    FastAPICache.init(RedisBackend(redis), prefix="cache")
+    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
+
+@app.on_event("shutdown")  # <-- данный декоратор прогоняет код после завершения программы
+def shutdown_event():
+    pass
