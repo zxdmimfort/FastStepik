@@ -1,4 +1,5 @@
 venv
+static
 .env
 .env-non-dev
 .env-render
