@@ -1,5 +1,5 @@
 from datetime import date
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends
 from pydantic import ValidationError, parse_obj_as
 
 from app.bookings.dao import BookingDAO
@@ -24,6 +24,7 @@ async def get_bookings(user: Users = Depends(get_current_user)):
 
 @router.post("")
 async def add_booking(
+    background_tasks: BackgroundTasks,
     room_id: int,
     date_from: date,
     date_to: date,
@@ -35,7 +36,10 @@ async def add_booking(
     except ValidationError:
         pass
     else:
+        # вариант с celery
         send_booking_confirmation_email.delay(booking_dict, user.email)
+        # вариант с background tasks
+        # background_tasks.add_task(send_booking_confirmation_email, booking_dict, user.email)
     return booking
 
 @router.delete("/{booking_id}")
