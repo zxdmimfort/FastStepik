@@ -3,11 +3,6 @@ from app.database import Base
 
 
 class Users(Base):
-    """
-    id: int
-    email: str
-    hashed_password: str
-    """
     __tablename__='users'
 
     id = Column(Integer, primary_key=True, nullable=False)
