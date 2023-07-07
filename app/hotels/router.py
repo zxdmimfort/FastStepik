@@ -25,7 +25,7 @@ async def get_hotels_by_location_and_time(
 
 
 @router.get("/id/{hotel_id}", response_model=SHotels)
-async def get_hotel_info(
+async def get_hotel_by_id(
     hotel_id: int
 ):
     return await HotelDAO.find_one_or_none(id=hotel_id)

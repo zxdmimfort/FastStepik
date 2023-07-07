@@ -5,7 +5,7 @@ from app.hotels.router import router
 
 
 @router.get("/{hotel_id}/rooms", response_model=list[SRooms])
-async def get_rooms(
+async def get_rooms_by_time(
     hotel_id: int,
     date_from: date,
     date_to: date,

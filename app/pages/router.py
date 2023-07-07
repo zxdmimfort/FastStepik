@@ -1,9 +1,15 @@
-from fastapi import APIRouter, Depends, Request
-from fastapi.templating import Jinja2Templates
-from app.hotels.rooms.router import get_rooms
+from datetime import date, datetime, timedelta
 
-from app.hotels.router import get_hotels_by_location_and_time
-from app.users.router import read_users_me
+from fastapi import APIRouter, Depends, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+
+
+from app.bookings.router import add_booking  #, get_bookings
+from app.hotels.rooms.router import get_rooms_by_time
+from app.hotels.router import get_hotels_by_location_and_time, get_hotel_by_id
+from app.utils import format_number_thousand_separator, get_month_days
+
 
 
 router = APIRouter(
@@ -13,33 +19,64 @@ router = APIRouter(
 
 templates = Jinja2Templates(directory="app/templates")
 
-@router.get("/hotels")
+
+@router.get("/login", response_class=HTMLResponse)
+async def get_login_page(request: Request):
+    return templates.TemplateResponse("auth/login.html", {"request": request})
+
+
+@router.get("/register", response_class=HTMLResponse)
+async def get_register_page(request: Request):
+    return templates.TemplateResponse("auth/register.html", {"request": request})
+
+@router.get("/hotels/{location}", response_class=HTMLResponse)
 async def get_hotels_page(
     request: Request,
-    hotels=Depends(get_hotels_by_location_and_time)
+    location: str,
+    date_to: date,
+    date_from: date,
+    hotels=Depends(get_hotels_by_location_and_time),
 ):
+    dates = get_month_days()
+    if date_from > date_to:
+        date_to, date_from = date_from, date_to
+    # Автоматически ставим дату заезда позже текущей даты
+    date_from = max(datetime.today().date(), date_from)
+    # Автоматически ставим дату выезда не позже, чем через 180 дней
+    date_to = min((datetime.today() + timedelta(days=180)).date(), date_to)
     return templates.TemplateResponse(
-        name="hotels.html",
-        context={"request": request, "hotels": hotels}
+        "hotels_and_rooms/hotels.html",
+        {
+            "request": request,
+            "hotels": hotels,
+            "location": location,
+            "date_to": date_to.strftime("%Y-%m-%d"),
+            "date_from": date_from.strftime("%Y-%m-%d"),
+            "dates": dates,
+        },
     )
 
-@router.get("/auth_me")
-async def get_my_page(
+@router.get("/hotels/{hotel_id}/rooms", response_class=HTMLResponse)
+async def get_rooms_page(
     request: Request,
-    user=Depends(read_users_me)
+    date_from: date,
+    date_to: date,
+    rooms=Depends(get_rooms_by_time),
+    hotel=Depends(get_hotel_by_id),
 ):
+    date_from_formatted = date_from.strftime("%d.%m.%Y")
+    date_to_formatted = date_to.strftime("%d.%m.%Y")
+    booking_length = (date_to - date_from).days
     return templates.TemplateResponse(
-        name="person_account.html",
-        context={"request": request, "user": user}
+        "hotels_and_rooms/rooms.html",
+        {
+            "request": request,
+            "hotel": hotel,
+            "rooms": rooms,
+            "date_from": date_from,
+            "date_to": date_to,
+            "booking_length": booking_length,
+            "date_from_formatted": date_from_formatted,
+            "date_to_formatted": date_to_formatted,
+        },
     )
-
-# @router.get("/{hotel_id}/rooms")
-# async def get_hotel_rooms_page(
-#     request: Request,
-#     rooms=Depends()
-# ):
-#     return templates.TemplateResponse(
-#         name="rooms.html",
-#         context={"request": request, "rooms": rooms}
-#     )
-
