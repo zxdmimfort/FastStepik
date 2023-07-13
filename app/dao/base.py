@@ -20,8 +20,6 @@ class BaseDAO:
             query = select(cls.model.__table__.columns).filter_by(**filter_by)
             result = await session.execute(query)
             result = result.mappings().one_or_none()
-            if result is None:
-                raise BookingNotFound
             return result
 
     @classmethod

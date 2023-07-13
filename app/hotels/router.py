@@ -3,6 +3,7 @@ from datetime import date, datetime
 from typing import Annotated
 from fastapi import APIRouter, Query
 from fastapi_cache.decorator import cache
+from app.exceptions import BookingNotFound
 
 from app.hotels.dao import HotelDAO
 from app.hotels.schemas import SHotels, SHotelsInfo
@@ -28,4 +29,7 @@ async def get_hotels_by_location_and_time(
 async def get_hotel_info(
     hotel_id: int
 ):
-    return await HotelDAO.find_one_or_none(id=hotel_id)
+    result = await HotelDAO.find_one_or_none(id=hotel_id)
+    if result:
+        return result
+    raise BookingNotFound
