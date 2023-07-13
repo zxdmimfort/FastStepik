@@ -102,6 +102,8 @@ class BookingDAO(BaseDAO):
                 new_booking_id = await session.execute(add_booking)
                 await session.commit()
                 new_booking = await cls.find_one_or_none(id=new_booking_id.scalar())
+                if not new_booking:
+                    raise BookingNotFound
                 return new_booking
             return RoomCannotBeBooked
     
