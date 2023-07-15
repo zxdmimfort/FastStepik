@@ -21,7 +21,7 @@ class HotelDAO(BaseDAO):
     ):
         """
         -- location = "Алтай"
-        -- date_from = "2023-05-10"
+        -- date_from = "2023-05-15"
         -- date_to = "2023-06-20"
 
         with booked_rooms as (
@@ -30,8 +30,8 @@ class HotelDAO(BaseDAO):
             join rooms on bookings.room_id = rooms.id
             join hotels on rooms.hotel_id = hotels.id
             where
-            ((date_from >= '2023-05-10' and date_from <= '2023-06-20') or
-            (date_from <= '2023-05-10' and date_to >= '2023-05-10'))
+            ((date_from >= '2023-05-15' and date_from <= '2023-06-20') or
+            (date_from <= '2023-05-15' and date_to >= '2023-05-15'))
             group by hotel_id
         )
         select hotels.id, "name", "location", "services", rooms_quantity, image_id, rooms_quantity - coalesce(already_booked, 0) as rooms_left
@@ -48,11 +48,11 @@ class HotelDAO(BaseDAO):
             or_(
                 and_(
                     Bookings.date_from >= date_from,
-                    Bookings.date_from <= date_to
+                    Bookings.date_from < date_to
                 ),
                 and_(
                     Bookings.date_from <= date_from,
-                    Bookings.date_to >= date_from
+                    Bookings.date_to > date_from
                 )
             )
         ).group_by(Rooms.hotel_id).cte("booked_rooms")

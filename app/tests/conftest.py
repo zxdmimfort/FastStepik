@@ -17,7 +17,7 @@ from httpx import AsyncClient
 
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="module", autouse=True)
 async def prepare_database():
     assert settings.MODE == "TEST"
 
@@ -66,7 +66,18 @@ async def ac():
         yield ac
 
 
-@pytest.fixture(scope="function")
-async def session():
-    async with async_session_maker() as session:
-        yield session
+# @pytest.fixture(scope="function")
+# async def session():
+#     async with async_session_maker() as session:
+#         yield session
+
+
+@pytest.fixture(scope="session")
+async def authenticated_ac():
+    async with AsyncClient(app=fastapi_app, base_url="http://test") as ac:
+        await ac.post("/auth/login", json={
+            "email": "test@test.com",
+            "password": "test",
+        })
+        assert ac.cookies["booking_access_token"]
+        yield ac

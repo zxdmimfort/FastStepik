@@ -22,7 +22,12 @@ class BookingDAO(BaseDAO):
     ):
         get_bookings_with_info = select(
             Bookings.__table__.columns,
-            Rooms.__table__.columns
+            Rooms.hotel_id,
+            Rooms.name,
+            Rooms.description,
+            Rooms.services,
+            Rooms.quantity,
+            Rooms.image_id
         ).select_from(
             Bookings
         ).join(
@@ -48,8 +53,8 @@ class BookingDAO(BaseDAO):
         with booked_rooms as (
 	        select * from bookings
 	        where room_id = 1 and (
-	        (date_from >= '2023-05-15' and date_from <= '2023-06-20') or
-            (date_from <= '2023-05-15' and date_to >= '2023-05-15')
+	        (date_from >= '2023-05-15' and date_from < '2023-06-20') or
+            (date_from <= '2023-05-15' and date_to > '2023-05-15')
             )
         )
         select rooms.quantity - count(booked_rooms.room_id) from rooms
@@ -64,10 +69,11 @@ class BookingDAO(BaseDAO):
                 or_(
                     and_(
                     Bookings.date_from >= date_from,
-                    Bookings.date_from <= date_to
+                    Bookings.date_from < date_to
                     ),
-                    and_(Bookings.date_from <= date_from,
-                    Bookings.date_to >= date_from
+                    and_(
+                    Bookings.date_from <= date_from,
+                    Bookings.date_to > date_from
                     )
                 )
             )
@@ -87,25 +93,26 @@ class BookingDAO(BaseDAO):
             rooms_left = await session.execute(get_rooms_left)
             rooms_left: int = rooms_left.scalar()
         
-            if rooms_left > 0:
-                get_price = select(Rooms.price).filter_by(id=room_id)
-                price = await session.execute(get_price)
-                price: int = price.scalar()
-                add_booking = insert(Bookings).values(
-                    room_id=room_id,
-                    user_id=user_id,
-                    date_from=date_from,
-                    date_to=date_to,
-                    price=price,
-                ).returning(Bookings.id)
+            if rooms_left <= 0:
+                raise RoomCannotBeBooked
+            get_price = select(Rooms.price).filter_by(id=room_id)
+            price = await session.execute(get_price)
+            price: int = price.scalar()
+            add_booking = insert(Bookings).values(
+                room_id=room_id,
+                user_id=user_id,
+                date_from=date_from,
+                date_to=date_to,
+                price=price,
+            ).returning(Bookings.id)
 
-                new_booking_id = await session.execute(add_booking)
-                await session.commit()
-                new_booking = await cls.find_one_or_none(id=new_booking_id.scalar())
-                if not new_booking:
-                    raise BookingNotFound
-                return new_booking
-            return RoomCannotBeBooked
+            new_booking_id = await session.execute(add_booking)
+            await session.commit()
+            new_booking = await cls.find_one_or_none(id=new_booking_id.scalar())
+            if not new_booking:
+                raise BookingNotFound
+            return new_booking
+
     
     @classmethod
     async def delete_my_booking(

@@ -28,5 +28,5 @@ async def test_login_user(email, password, status_code, ac: AsyncClient):
         "email": email,
         "password": password,
     })
-
+    
     assert response.status_code == status_code

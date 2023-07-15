@@ -21,7 +21,7 @@ async def get_bookings(user: Users = Depends(get_current_user)):
     return await BookingDAO.find_all(user_id=user.id)
 
 
-@router.post("")
+@router.post("", status_code=201, response_model=SBookings)
 async def add_booking(
     background_tasks: BackgroundTasks,
     room_id: int,
@@ -30,13 +30,13 @@ async def add_booking(
     user: Users = Depends(get_current_user),
 ):
     booking = await BookingDAO.add(user.id, room_id, date_from, date_to)
-    try:
-        booking_dict = parse_obj_as(SBookings, booking).dict()
-    except ValidationError:
-        pass
-    else:
+    # try:
+        # booking_dict = parse_obj_as(SBookings, booking).dict()
+    # except ValidationError:
+    #     pass
+    # else:
         # вариант с celery
-        send_booking_confirmation_email.delay(booking_dict, user.email)
+        # send_booking_confirmation_email.delay(booking_dict, user.email)
         # вариант с background tasks
         # background_tasks.add_task(send_booking_confirmation_email, booking_dict, user.email)
     return booking

@@ -48,3 +48,11 @@ class BookingNotFound(BookingException):
 class UserNotEnoughPermissions(BookingException):
     status_code=status.HTTP_403_FORBIDDEN
     detail="Not enough permissions"
+
+class TooLongBooking(BookingException):
+    status_code=status.HTTP_400_BAD_REQUEST
+    detail="Max period booking is 30 days"
+
+class BackToTheFuture(BookingException):
+    status_code=status.HTTP_400_BAD_REQUEST
+    detail="Date_to must be later than date_from"

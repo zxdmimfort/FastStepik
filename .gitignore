@@ -4,6 +4,7 @@ static
 .env-non-dev
 .env-render
 __pycache__
-# *.ipynb*
+*.ipynb*
 .pytest_cache
 *.code-workspace
+.vscode/settings.json

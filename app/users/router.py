@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, Response
 from app.config import settings
 from app.exceptions import BookingNotFound, UserAlreadyExistsException
 from app.users.auth import authenticate_user, create_access_token, get_password_hash
-from app.users.dao import UserDAO
+from app.users.dao import UsersDAO
 from app.users.dependencies import get_current_user
 from app.users.models import Users
 
@@ -21,11 +21,11 @@ router_users = APIRouter(
 
 @router_auth.post("/register")
 async def register_user(user_data: SUserAuth):
-    existing_user = await UserDAO.find_one_or_none(email=user_data.email)
+    existing_user = await UsersDAO.find_one_or_none(email=user_data.email)
     if existing_user:
         raise UserAlreadyExistsException
     hashed_password = get_password_hash(user_data.password)
-    await UserDAO.add(email=user_data.email, hashed_password=hashed_password)
+    await UsersDAO.add(email=user_data.email, hashed_password=hashed_password)
 
 
 @router_auth.post("/login")
