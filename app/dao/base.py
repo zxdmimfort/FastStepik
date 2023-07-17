@@ -1,8 +1,7 @@
-from app.database import async_session_maker
-
 from sqlalchemy import insert, select
 
-from app.exceptions import BookingNotFound
+from app.database import async_session_maker
+
 
 class BaseDAO:
     model = None

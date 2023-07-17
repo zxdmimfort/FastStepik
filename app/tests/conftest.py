@@ -1,20 +1,18 @@
 import asyncio
-from datetime import datetime
 import json
+from datetime import datetime
+
 import pytest
+from httpx import AsyncClient
 from sqlalchemy import insert
 
-from app.main import app as fastapi_app
+from app.bookings.models import Bookings
 from app.config import settings
 from app.database import Base, async_session_maker, engine
-from app.bookings.models import Bookings
 from app.hotels.models import Hotels
 from app.hotels.rooms.models import Rooms
+from app.main import app as fastapi_app
 from app.users.models import Users
-
-from fastapi.testclient import TestClient
-from httpx import AsyncClient
-
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -24,11 +22,11 @@ async def prepare_database():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
-    
+
     def open_mock_json(model: str):
         with open(f"app/tests/mock_{model}.json", encoding="utf-8") as file:
             return json.load(file)
-        
+
     hotels = open_mock_json("hotels")
     rooms = open_mock_json("rooms")
     users = open_mock_json("users")
@@ -75,9 +73,12 @@ async def ac():
 @pytest.fixture(scope="session")
 async def authenticated_ac():
     async with AsyncClient(app=fastapi_app, base_url="http://test") as ac:
-        await ac.post("/auth/login", json={
-            "email": "test@test.com",
-            "password": "test",
-        })
+        await ac.post(
+            "/auth/login",
+            json={
+                "email": "test@test.com",
+                "password": "test",
+            },
+        )
         assert ac.cookies["booking_access_token"]
         yield ac

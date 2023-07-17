@@ -1,12 +1,13 @@
 from datetime import timedelta
+
 from fastapi import APIRouter, Depends, Response
+
 from app.config import settings
-from app.exceptions import BookingNotFound, UserAlreadyExistsException
+from app.exceptions import UserAlreadyExistsException
 from app.users.auth import authenticate_user, create_access_token, get_password_hash
 from app.users.dao import UsersDAO
 from app.users.dependencies import get_current_user
 from app.users.models import Users
-
 from app.users.schemas import SUserAuth
 
 router_auth = APIRouter(
@@ -18,6 +19,7 @@ router_users = APIRouter(
     prefix="/users",
     tags=["Users"],
 )
+
 
 @router_auth.post("/register")
 async def register_user(user_data: SUserAuth):
@@ -35,7 +37,12 @@ async def login_user(response: Response, user_data: SUserAuth):
     access_token = create_access_token(
         data={"sub": str(user.id)}, expires_delta=access_token_expires
     )
-    response.set_cookie("booking_access_token", access_token, httponly=True, expires=access_token_expires)
+    response.set_cookie(
+        "booking_access_token",
+        access_token,
+        httponly=True,
+        expires=access_token_expires,
+    )
     return {"access_token": access_token}
 
 

@@ -1,12 +1,11 @@
 from datetime import timedelta
 from typing import Optional
 
-from sqladmin import Admin
 from sqladmin.authentication import AuthenticationBackend
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
-from app.config import settings
 
+from app.config import settings
 from app.users.auth import authenticate_user, create_access_token
 from app.users.dependencies import get_current_user
 
@@ -18,7 +17,9 @@ class AdminAuth(AuthenticationBackend):
 
         user = await authenticate_user(email, password)
         if user:
-            access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+            access_token_expires = timedelta(
+                minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+            )
             access_token = create_access_token(
                 data={"sub": str(user.id)}, expires_delta=access_token_expires
             )
@@ -35,7 +36,7 @@ class AdminAuth(AuthenticationBackend):
 
         if not token:
             return RedirectResponse(request.url_for("admin:login"), status_code=302)
-        
+
         user = await get_current_user(token)
         if not user:
             return RedirectResponse(request.url_for("admin:login"), status_code=302)

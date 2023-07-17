@@ -9,5 +9,6 @@ class SHotels(BaseModel):
     rooms_quantity: int
     image_id: int
 
+
 class SHotelsInfo(SHotels):
     rooms_left: int
