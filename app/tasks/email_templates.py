@@ -1,6 +1,8 @@
 from email.message import EmailMessage
-from app.config import settings
+
 from pydantic import EmailStr
+
+from app.config import settings
 
 
 def create_booking_confirmation_template(
@@ -18,6 +20,6 @@ def create_booking_confirmation_template(
             <h1>Подтвердите броннирование</h1>
             Вы забронировали отель с {booking["date_from"]} по {booking["date_to"]}
         """,
-        subtype="html"
+        subtype="html",
     )
     return email

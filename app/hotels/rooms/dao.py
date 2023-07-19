@@ -1,11 +1,11 @@
 from datetime import date
 
 from sqlalchemy import and_, func, or_, select
+
 from app.bookings.models import Bookings
 from app.dao.base import BaseDAO
+from app.database import async_session_maker, engine
 from app.hotels.rooms.models import Rooms
-
-from app.database import engine, async_session_maker
 
 
 class RoomDAO(BaseDAO):
@@ -47,37 +47,58 @@ class RoomDAO(BaseDAO):
         where greatest(quantity - coalesce(already_booked, 0), 0) > 0 and hotel_id = 1
         order by id;
         """
-        booked_rooms = select(
-            Bookings.room_id,
-            func.count('*').label("already_booked")
-            ).select_from(Bookings).where(
+        booked_rooms = (
+            select(Bookings.room_id, func.count("*").label("already_booked"))
+            .select_from(Bookings)
+            .where(
                 or_(
                     and_(
-                        date_from >= Bookings.date_from,
-                        date_from <= Bookings.date_to
+                        date_from >= Bookings.date_from, date_from <= Bookings.date_to
                     ),
                     and_(
-                        date_from <= Bookings.date_from,
-                        date_to >= Bookings.date_from
-                    )
+                        date_from <= Bookings.date_from, date_to >= Bookings.date_from
+                    ),
                 )
-            ).group_by(Bookings.room_id).cte("booked_rooms")
+            )
+            .group_by(Bookings.room_id)
+            .cte("booked_rooms")
+        )
 
-        get_free_rooms = select(
-            Rooms.id, Rooms.hotel_id, Rooms.name, Rooms.description,
-            Rooms.services, Rooms.price, Rooms.quantity,
-            Rooms.image_id,
-            ((func.date(date_to) - func.date(date_from)) * Rooms.price).label("total_cost"),
-            func.greatest((Rooms.quantity - func.coalesce(booked_rooms.c.already_booked, 0)), 0).label("rooms_left")
-        ).select_from(Rooms).join(
-            booked_rooms, booked_rooms.c.room_id == Rooms.id, isouter=True
-        ).where(
-            and_(
-                Rooms.hotel_id == hotel_id,
-                func.greatest((Rooms.quantity - func.coalesce(booked_rooms.c.already_booked, 0)), 0) > 0
+        get_free_rooms = (
+            select(
+                Rooms.id,
+                Rooms.hotel_id,
+                Rooms.name,
+                Rooms.description,
+                Rooms.services,
+                Rooms.price,
+                Rooms.quantity,
+                Rooms.image_id,
+                ((func.date(date_to) - func.date(date_from)) * Rooms.price).label(
+                    "total_cost"
+                ),
+                func.greatest(
+                    (Rooms.quantity - func.coalesce(booked_rooms.c.already_booked, 0)),
+                    0,
+                ).label("rooms_left"),
+            )
+            .select_from(Rooms)
+            .join(booked_rooms, booked_rooms.c.room_id == Rooms.id, isouter=True)
+            .where(
+                and_(
+                    Rooms.hotel_id == hotel_id,
+                    func.greatest(
+                        (
+                            Rooms.quantity
+                            - func.coalesce(booked_rooms.c.already_booked, 0)
+                        ),
+                        0,
+                    )
+                    > 0,
+                )
             )
         )
-        
+
         # print(get_free_rooms.compile(engine, compile_kwargs={"literal_binds": True}))
 
         async with async_session_maker() as session:

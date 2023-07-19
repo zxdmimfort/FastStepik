@@ -4,4 +4,5 @@ from app.users.models import Users
 
 class UsersDAO(BaseDAO):
     """id: int, email: str, hashed_password: str"""
+
     model = Users

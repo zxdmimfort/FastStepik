@@ -1,4 +1,5 @@
 from datetime import date
+
 from app.hotels.rooms.dao import RoomDAO
 from app.hotels.rooms.schemas import SRooms
 from app.hotels.router import router

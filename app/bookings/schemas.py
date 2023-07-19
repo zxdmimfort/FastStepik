@@ -1,4 +1,5 @@
 from datetime import date
+
 from pydantic import BaseModel
 
 from app.hotels.rooms.schemas import SRooms
@@ -13,6 +14,7 @@ class SBookings(BaseModel):
     price: int
     total_cost: int
     total_days: int
+
 
 class SBookingsInfo(SBookings, SRooms):
     pass

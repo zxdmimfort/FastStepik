@@ -47,7 +47,11 @@ class BookingDAO(BaseDAO):
         room_id: int,
         date_from: date,
         date_to: date,
+<<<<<<< HEAD
         ) -> int:
+=======
+    ):
+>>>>>>> refactor
         """
         with booked_rooms as (
                 select * from bookings
@@ -119,10 +123,8 @@ class BookingDAO(BaseDAO):
 
             new_booking_id = await session.execute(add_booking)
             await session.commit()
-
             return new_booking_id.scalar()
 
-    
     @classmethod
     async def delete_my_booking(cls, booking_id: int, user_id: int):
         async with async_session_maker() as session:

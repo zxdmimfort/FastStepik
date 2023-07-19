@@ -1,4 +1,5 @@
 from sqladmin import ModelView
+
 from app.bookings.models import Bookings
 from app.hotels.models import Hotels
 from app.hotels.rooms.models import Rooms
@@ -15,7 +16,10 @@ class UsersAdmin(ModelView, model=Users):
 
 
 class BookingsAdmin(ModelView, model=Bookings):
-    column_list = [c.name for c in Bookings.__table__.c] + [Bookings.user, Bookings.room]
+    column_list = [c.name for c in Bookings.__table__.c] + [
+        Bookings.user,
+        Bookings.room,
+    ]
     column_details_exclude_list = []
     name = "Бронь"
     name_plural = "Брони"
@@ -28,9 +32,9 @@ class HotelsAdmin(ModelView, model=Hotels):
     name_plural = "Отели"
     icon = "fa-solid fa-hotel"
 
+
 class RoomsAdmin(ModelView, model=Rooms):
     column_list = [c.name for c in Rooms.__table__.c] + [Rooms.hotel, Rooms.booking]
     name = "Комната"
     name_plural = "Комнаты"
     icon = "fa-solid fa-bed"
-    
