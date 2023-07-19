@@ -29,7 +29,8 @@ async def add_booking(
     date_to: date,
     user: Users = Depends(get_current_user),
 ):
-    booking = await BookingDAO.add(user.id, room_id, date_from, date_to)
+    booking_id = await BookingDAO.add(user.id, room_id, date_from, date_to)
+    booking = await BookingDAO.find_one_or_none(id=booking_id)
     # try:
         # booking_dict = parse_obj_as(SBookings, booking).dict()
     # except ValidationError:
