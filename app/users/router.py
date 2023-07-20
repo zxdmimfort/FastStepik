@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, Response
+from app.bookings.dao import BookingDAO
 
 from app.config import settings
 from app.exceptions import UserAlreadyExistsException
@@ -52,5 +53,11 @@ async def logout_user(response: Response):
 
 
 @router_users.get("/me")
-async def read_users_me(current_user: Users = Depends(get_current_user)):
-    return current_user
+async def get_my_info(current_user: Users = Depends(get_current_user)):
+    bookings = await BookingDAO.find_all(user_id=current_user.id)
+    my_info = {
+        "email": current_user.email,
+        "bookings": bookings,
+    }
+
+    return my_info
