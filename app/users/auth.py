@@ -5,7 +5,7 @@ from passlib.context import CryptContext
 from pydantic import EmailStr
 
 from app.config import settings
-from app.exceptions import IncorrectEmailOrPasswordException
+from app.exceptions import IncorrectEmailOrPasswordException, UserNotEnoughPermissions
 from app.users.dao import UsersDAO
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -30,9 +30,13 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
     return encoded_jwt
 
 
-async def authenticate_user(email: EmailStr, password: str):
+async def authenticate_user(email: EmailStr, password: str, admin: bool = False):
     user = await UsersDAO.find_one_or_none(email=email)
-    if user and verify_password(password, user.hashed_password):
+    if not user:
+        raise IncorrectEmailOrPasswordException
+    if admin and not user.admin:
+        raise UserNotEnoughPermissions
+    if verify_password(password, user.hashed_password):
         return user
     else:
         raise IncorrectEmailOrPasswordException

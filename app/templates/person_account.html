@@ -3,9 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Last Resort Search Machine</title>
 </head>
 <body>
-    
+    <header>
+        <h1>Last Resort Search Machine</h1>
+        <nav>
+            <ul>
+                <li><a href="#">Личный кабинет</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div>
+        <h1>My Page {{ user_info.email }}</h1>
+    </div>
+    <div>
+        {% for booking in user_info.get("bookings") %}
+        <h2>{{ booking.name }}</h2>
+        <h4>С {{ booking.date_from }} по {{ booking.date_to }}. Всего дней: {{ booking.total_days }}</h4>
+        <h5>Стоимость {{ booking.total_cost }}</h5>
+        {% endfor %}
+    </div>
 </body>
 </html>

@@ -27,7 +27,7 @@ async def get_current_user(token: str = Depends(get_token)):
         raise IncorrectTokenFormat
 
     expire: str = payload.get("exp")
-    if (not expire) or int(expire) < datetime.utcnow().timestamp():
+    if (not expire) or datetime.fromtimestamp(int(expire)) < datetime.utcnow():
         raise TokenExpiredException
 
     user_id: str = payload.get("sub")
