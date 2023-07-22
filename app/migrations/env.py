@@ -7,10 +7,10 @@ from sqlalchemy import engine_from_config, pool
 
 from app.config import settings
 from app.database import Base
-from app.bookings.models import Bookings # noqa
-from app.hotels.models import Hotels # noqa
-from app.hotels.rooms.models import Rooms # noqa
-from app.users.models import Users # noqa
+from app.bookings.models import Bookings  # noqa
+from app.hotels.models import Hotels  # noqa
+from app.hotels.rooms.models import Rooms  # noqa
+from app.users.models import Users  # noqa
 
 sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 

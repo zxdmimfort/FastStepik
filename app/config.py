@@ -5,6 +5,7 @@ from pydantic import BaseSettings
 
 class Settings(BaseSettings):
     MODE: Literal["DEV", "TEST", "PROD"]
+    LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
     DB_HOST: str
     DB_PORT: int
@@ -37,6 +38,9 @@ class Settings(BaseSettings):
     SMTP_PORT: int
     SMTP_USER: str
     SMTP_PASS: str
+
+    ADMIN_USER: str
+    ADMIN_PASS: str
 
     SECRET_KEY: str
     ALGORITHM: str

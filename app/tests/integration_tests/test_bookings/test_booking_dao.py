@@ -22,7 +22,7 @@ async def test_CRUD():
         user_id=2,
         room_id=2,
         date_from=datetime.strptime("2023-01-01", "%Y-%m-%d"),
-        date_to=datetime.strptime("2023-01-07", "%Y-%m-%d")
+        date_to=datetime.strptime("2023-01-07", "%Y-%m-%d"),
     )
 
     new_booking = await BookingDAO.find_by_id(new_booking_id)

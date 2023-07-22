@@ -15,7 +15,7 @@ class AdminAuth(AuthenticationBackend):
         form = await request.form()
         email, password = form["username"], form["password"]
 
-        user = await authenticate_user(email, password)
+        user = await authenticate_user(email, password, admin=True)
         if user:
             access_token_expires = timedelta(
                 minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES

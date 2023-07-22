@@ -40,4 +40,3 @@ async def test_get_and_delete_bookings(authenticated_ac: AsyncClient):
         response = await authenticated_ac.delete(url)
     response = await authenticated_ac.get("/bookings")
     assert len(response.json()) == 0
-    

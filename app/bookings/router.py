@@ -1,13 +1,14 @@
 from datetime import date
 
 from fastapi import APIRouter, BackgroundTasks, Depends
-from pydantic import ValidationError, parse_obj_as
+# from pydantic import ValidationError, parse_obj_as
 
 from app.bookings.dao import BookingDAO
 from app.bookings.schemas import SBookings, SBookingsInfo
-from app.tasks.tasks import send_booking_confirmation_email
+# from app.tasks.tasks import send_booking_confirmation_email
 from app.users.dependencies import get_current_user
 from app.users.models import Users
+from app.exceptions import RoomCannotBeBooked
 
 router = APIRouter(
     prefix="/bookings",
@@ -29,6 +30,8 @@ async def add_booking(
     user: Users = Depends(get_current_user),
 ):
     booking_id = await BookingDAO.add(user.id, room_id, date_from, date_to)
+    if not booking_id:
+        raise RoomCannotBeBooked
     booking = await BookingDAO.find_one_or_none(id=booking_id)
     # try:
     # booking_dict = parse_obj_as(SBookings, booking).dict()
@@ -38,7 +41,7 @@ async def add_booking(
     # вариант с celery
     # send_booking_confirmation_email.delay(booking_dict, user.email)
     # вариант с background tasks
-    # background_tasks.add_task(send_booking_confirmation_email, booking_dict, user.email)
+    # background_tasks.add_task(send_booking_confirmation_email, booking_dict, user.email) # noqa
     return booking
 
 
