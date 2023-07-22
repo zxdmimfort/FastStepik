@@ -1,6 +1,6 @@
 from app.config import settings
 
-import datetime
+from datetime import datetime
 import logging
 from pythonjsonlogger import jsonlogger
 
@@ -15,7 +15,7 @@ class CustomJsonFormatter(jsonlogger.JsonFormatter):
         super(CustomJsonFormatter, self).add_fields(log_record, record, message_dict)
         if not log_record.get("timestamp"):
             # this doesn't use record.created, so it is slightly off
-            now = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+            now = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")
             log_record["timestamp"] = now
         if log_record.get("level"):
             log_record["level"] = log_record["level"].upper()
@@ -23,7 +23,9 @@ class CustomJsonFormatter(jsonlogger.JsonFormatter):
             log_record["level"] = record.levelname
 
 
-formatter = CustomJsonFormatter("%(timestamp)s %(level)s %(name)s %(message)s")
+formatter = CustomJsonFormatter(
+    "%(timestamp)s %(level)s %(name)s %(message)s %(module)s %(funcName)s"
+    )
 logHandler.setFormatter(formatter)
 logger.addHandler(logHandler)
 logger.setLevel(settings.LOG_LEVEL)

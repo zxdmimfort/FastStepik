@@ -1,4 +1,5 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
+from email.utils import format_datetime
 
 from fastapi import APIRouter, Depends, Response
 from app.bookings.dao import BookingDAO
@@ -42,7 +43,7 @@ async def login_user(response: Response, user_data: SUserAuth):
         "booking_access_token",
         access_token,
         httponly=True,
-        expires=access_token_expires,
+        expires=format_datetime(datetime.now() + access_token_expires)
     )
     return {"access_token": access_token}
 
