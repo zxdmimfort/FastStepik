@@ -30,7 +30,7 @@ services:
     container_name: booking_celery
     env_file:
       - .env-non-dev
-    command: sh -c "celery --app=app.tasks.celery:celery worker -l INFO"
+    command: ["/booking/docker/celery.sh", "celery"]
     depends_on:
       - redis
       - booking
@@ -41,7 +41,7 @@ services:
     container_name: booking_flower
     env_file:
       - .env-non-dev
-    command: sh -c "celery --app=app.tasks.celery:celery flower"
+    command: ["/booking/docker/celery.sh", "flower"]
     ports:
       - 5555:5555
     depends_on:
