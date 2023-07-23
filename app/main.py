@@ -7,6 +7,7 @@ from fastapi_cache.backends.redis import RedisBackend
 from redis import asyncio as aioredis
 from sqladmin import Admin
 import sentry_sdk
+from fastapi_versioning import VersionedFastAPI
 
 from app.admin.auth import authentication_backend
 from app.admin.views import BookingsAdmin, HotelsAdmin, RoomsAdmin, UsersAdmin
@@ -21,7 +22,6 @@ from app.logger import logger
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="app/static"), "static")
 
 app.include_router(router_auth)
 app.include_router(router_users)
@@ -58,14 +58,6 @@ async def startup():
     FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
 
 
-admin = Admin(app, engine, authentication_backend=authentication_backend)
-
-admin.add_view(UsersAdmin)
-admin.add_view(BookingsAdmin)
-admin.add_view(HotelsAdmin)
-admin.add_view(RoomsAdmin)
-
-
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
     start_time = time.time()
@@ -91,3 +83,23 @@ sentry_sdk.init(
 @app.get("/sentry-debug")
 async def trigger_error():
     division_by_zero = 1 / 0 # noqa
+
+app = VersionedFastAPI(
+    app,
+    version_format='{major}',
+    prefix_format='/v{major}',
+    # description='Greet users with a nice message',
+    # middleware=[
+    #     Middleware(SessionMiddleware, secret_key='mysecretkey')
+    # ]
+)
+
+app.mount("/static", StaticFiles(directory="app/static"), "static")
+
+
+admin = Admin(app, engine, authentication_backend=authentication_backend)
+
+admin.add_view(UsersAdmin)
+admin.add_view(BookingsAdmin)
+admin.add_view(HotelsAdmin)
+admin.add_view(RoomsAdmin)

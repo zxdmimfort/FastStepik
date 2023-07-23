@@ -15,6 +15,9 @@ class SBookings(BaseModel):
     total_cost: int
     total_days: int
 
+    class Config:
+        orm_mode = True
+
 
 class SBookingsInfo(SBookings, SRooms):
     pass
