@@ -13,7 +13,7 @@ from httpx import AsyncClient
 )
 async def test_register_user(email, password, status_code, ac: AsyncClient):
     response = await ac.post(
-        "/auth/register",
+        "/v1/auth/register",
         json={
             "email": email,
             "password": password,
@@ -34,7 +34,7 @@ async def test_register_user(email, password, status_code, ac: AsyncClient):
 )
 async def test_login_user(email, password, status_code, ac: AsyncClient):
     response = await ac.post(
-        "/auth/login",
+        "/v1/auth/login",
         json={
             "email": email,
             "password": password,

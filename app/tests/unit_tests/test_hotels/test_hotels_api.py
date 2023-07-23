@@ -19,7 +19,7 @@ async def test_get_hotels_by_location_and_time(
     ac: AsyncClient,
 ):
     response = await ac.get(
-        "/hotels",
+        "/v1/hotels",
         params={
             "location": location,
             "date_from": date_from,
