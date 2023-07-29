@@ -6,7 +6,7 @@ from pydantic import EmailStr
 
 from app.config import settings
 from app.exceptions import IncorrectEmailOrPasswordException, UserNotEnoughPermissions
-from app.users.dao import UsersDAO
+from app.users.dao import UserDAO
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -31,7 +31,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
 
 
 async def authenticate_user(email: EmailStr, password: str, admin: bool = False):
-    user = await UsersDAO.find_one_or_none(email=email)
+    user = await UserDAO.find_one_or_none(email=email)
     if not user:
         raise IncorrectEmailOrPasswordException
     if admin and not user.admin:

@@ -43,7 +43,7 @@ class BookingDAO(BaseDAO):
             return bookings_with_info.mappings().all()
 
     @classmethod
-    async def add(
+    async def add_booking(
         cls,
         user_id: int,
         room_id: int,

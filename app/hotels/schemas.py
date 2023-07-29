@@ -1,8 +1,9 @@
+from typing import Optional
 from pydantic import BaseModel
 
 
 class SHotels(BaseModel):
-    id: int
+    id: Optional[int]
     name: str
     location: str
     services: list[str]
