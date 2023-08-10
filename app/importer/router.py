@@ -24,14 +24,14 @@ router = APIRouter(
 )
 
 
-@router.post("/import/{database_name}")
+@router.post("/import/{database_name}", status_code=201)
 async def import_data_to_database(database_name: str, file: UploadFile, user: Users = Depends(get_current_user)):
     if not user.admin:
         raise UserNotEnoughPermissions
 
-    tables = {"users": (SUserAuth, UserDAO), "bookings": (SBookings, BookingDAO), "hotels": (SHotels, HotelDAO), "rooms": (SRooms, RoomDAO)}
-    model, dao_model = tables.get(database_name, (None, None))
-    if not dao_model:
+    tables = {"bookings": (SBookings, BookingDAO, ('id', 'total_cost', 'total_days')), "hotels": (SHotels, HotelDAO, ('id',)), "rooms": (SRooms, RoomDAO, ('id',))}
+    model, model_dao, pop_cols = tables.get(database_name, (None, None))
+    if not model:
         raise BookingNotFound
 
     
@@ -42,9 +42,15 @@ async def import_data_to_database(database_name: str, file: UploadFile, user: Us
 
 
     for row in json_data:
-        print(row)
+        print('||||importer.router.py|||||||||', type(row))
+        if 'services' in row:
+            row['services'] = []
         row = model(**row).dict()
+        print(type(row))
 
-        await dao_model.add(**row)
+        for pop_col in pop_cols:
+            row.pop(pop_col, None)
+        
+        await model_dao.add(**row)
     
     return {"message": f"Successfuly upload {len(json_data)} data to {database_name}"}
