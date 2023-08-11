@@ -1,6 +1,0 @@
-id;email;hashed_password;admin
-1;fedor@moloko.ru;tut_budet_hashed_password_1;
-2;sharik@moloko.ru;tut_budet_hashed_password_2;
-5;user123@example.com;$2b$12$SZWmdw/7aHyrojKVEB8vxO3UAVYxJIeAMUVRBn1tQpsNFtBz28oCe;False
-3;user@example.com;$2b$12$AMKl3HjRtWdBgA1wyLNRhuyTiMtLVeySAQ3SELC3Yyv7tRfAFtzUO;True
-4;user1@example.com;$2b$12$bntUvDp0i7xj3xu01boNLeSCvy4hRYi8RoyydN2XzApDO8FssaJue;False
