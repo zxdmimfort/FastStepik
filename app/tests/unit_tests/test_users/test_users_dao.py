@@ -1,6 +1,6 @@
 import pytest
 
-from app.users.dao import UsersDAO
+from app.users.dao import UserDAO
 from app.users.models import Users
 
 
@@ -14,7 +14,7 @@ from app.users.models import Users
     ],
 )
 async def test_find_user_by_id(user_id: int, email: str, exists: bool):
-    user: Users = await UsersDAO.find_by_id(user_id)
+    user: Users = await UserDAO.find_by_id(user_id)
     if exists:
         assert user
         assert user.id == user_id

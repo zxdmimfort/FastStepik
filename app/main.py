@@ -18,6 +18,7 @@ from app.hotels.router import router as router_hotels
 from app.images.router import router as router_images
 from app.pages.router import router as router_pages
 from app.users.router import router_auth, router_users
+from app.importer.router import router as router_importer
 from app.logger import logger
 
 app = FastAPI()
@@ -30,6 +31,7 @@ app.include_router(router_bookings)
 
 app.include_router(router_pages)
 app.include_router(router_images)
+app.include_router(router_importer)
 
 origins = [
     "http://localhost:3000",
@@ -48,26 +50,6 @@ app.add_middleware(
         "Authorization",
     ],
 )
-
-
-@app.on_event("startup")  # <-- данный декоратор прогоняет код перед запуском FastAPI
-async def startup():
-    redis = aioredis.from_url(
-        f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}",
-    )
-    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
-
-
-@app.middleware("http")
-async def add_process_time_header(request: Request, call_next):
-    start_time = time.time()
-    response = await call_next(request)
-    process_time = time.time() - start_time
-    # response.headers["X-Process_Time"] = str(process_time)
-    logger.info("Request execution time", extra={
-        "process_time": round(process_time, 4)
-    })
-    return response
 
 
 sentry_sdk.init(
@@ -93,6 +75,27 @@ app = VersionedFastAPI(
     #     Middleware(SessionMiddleware, secret_key='mysecretkey')
     # ]
 )
+
+
+@app.on_event("startup")  # <-- данный декоратор прогоняет код перед запуском FastAPI
+async def startup():
+    redis = aioredis.from_url(
+        f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT}",
+    )
+    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
+
+
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    # response.headers["X-Process_Time"] = str(process_time)
+    logger.info("Request execution time", extra={
+        "process_time": round(process_time, 4)
+    })
+    return response
+
 
 app.mount("/static", StaticFiles(directory="app/static"), "static")
 
