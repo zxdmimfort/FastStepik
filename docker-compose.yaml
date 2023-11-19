@@ -1,3 +1,4 @@
+# rename me to .env-non-dev
 version: '3.7'
 services:
   db:
@@ -19,7 +20,6 @@ services:
     env_file:
       - .env-non-dev
     command: ["/booking/docker/app.sh"]
-    # command: sh -c "alembic upgrade head && gunicorn app.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:8000"
     ports:
       - 8000:8000
     depends_on:
@@ -33,7 +33,6 @@ services:
     env_file:
       - .env-non-dev
     command: ["/booking/docker/celery.sh", "celery"]
-    # command: sh -c "celery --app=app.tasks.celery:celery worker -l INFO"
     depends_on:
       - redis
       - booking
@@ -45,7 +44,6 @@ services:
     env_file:
       - .env-non-dev
     command: ["/booking/docker/celery.sh", "flower"]
-    # command: sh -c "celery --app=app.tasks.celery:celery flower --url_prefix=/flower"
     ports:
       - 5555:5555
     depends_on:
