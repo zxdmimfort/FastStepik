@@ -85,16 +85,16 @@ async def startup():
     FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
 
 
-@app.middleware("http")
-async def add_process_time_header(request: Request, call_next):
-    start_time = time.time()
-    response = await call_next(request)
-    process_time = time.time() - start_time
-    # response.headers["X-Process_Time"] = str(process_time)
-    logger.info("Request execution time", extra={
-        "process_time": round(process_time, 4)
-    })
-    return response
+# @app.middleware("http")
+# async def add_process_time_header(request: Request, call_next):
+#     start_time = time.time()
+#     response = await call_next(request)
+#     process_time = time.time() - start_time
+#     # response.headers["X-Process_Time"] = str(process_time)
+#     logger.info("Request execution time", extra={
+#         "process_time": round(process_time, 4)
+#     })
+#     return response
 
 
 app.mount("/static", StaticFiles(directory="app/static"), "static")
