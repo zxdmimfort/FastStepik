@@ -18,10 +18,10 @@ services:
     container_name: booking_app
     env_file:
       - .env-non-dev
-    # command: ["/booking/docker/app.sh"]
-    command: sh -c "alembic upgrade head && gunicorn app.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:8000"
+    command: ["/booking/docker/app.sh"]
+    # command: sh -c "alembic upgrade head && gunicorn app.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind=0.0.0.0:8000"
     ports:
-      - 7777:8000
+      - 8000:8000
     depends_on:
       - db
       - redis
@@ -32,8 +32,8 @@ services:
     container_name: booking_celery
     env_file:
       - .env-non-dev
-    # command: ["/booking/docker/celery.sh", "celery"]\
-    command: sh -c "celery --app=app.tasks.celery:celery worker -l INFO"
+    command: ["/booking/docker/celery.sh", "celery"]
+    # command: sh -c "celery --app=app.tasks.celery:celery worker -l INFO"
     depends_on:
       - redis
       - booking
@@ -44,8 +44,8 @@ services:
     container_name: booking_flower
     env_file:
       - .env-non-dev
-    # command: ["/booking/docker/celery.sh", "flower"]
-    command: sh -c "celery --app=app.tasks.celery:celery flower --url_prefix=/flower"
+    command: ["/booking/docker/celery.sh", "flower"]
+    # command: sh -c "celery --app=app.tasks.celery:celery flower --url_prefix=/flower"
     ports:
       - 5555:5555
     depends_on:
